@@ -1,0 +1,39 @@
+#:kivy 2.2.0
+
+<Container>:
+    rows: 4
+    padding: 50
+
+    get_login_input: login_input
+    get_password_input: password_input
+    label_widget: label
+
+    TextInput:
+        id: login_input
+        size_hint: 0.4, 0.3
+        multiline: False
+        font_size: 40
+
+    TextInput:
+        id: password_input
+        size_hint: 0.4, 0.3
+        multiline: False
+        font_size: 40
+        password: True
+        password_mask: "*"
+
+    Label:
+        id: label
+        text: 'test'
+        font_size: 40
+
+    FloatLayout:
+        Button:
+            size_hint: 0.4, 0.3
+            pos_hint: {'center_x': 0.5, 'y': 0.1}
+            text: 'Войти'
+            font_size: 40
+
+            on_press:
+            # к верхнему виджету
+                root.get_text()
