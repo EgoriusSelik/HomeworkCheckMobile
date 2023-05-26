@@ -29,12 +29,9 @@ from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.toolbar import MDTopAppBar
 
-
 class LoginScreen(Screen):
-
     def __init__(self, **kwargs):
         super(LoginScreen, self).__init__(**kwargs)
-
 
         box_layout = BoxLayout(orientation='vertical', padding=50, spacing=20)
         self.username_input = TextInput(hint_text='Username')
