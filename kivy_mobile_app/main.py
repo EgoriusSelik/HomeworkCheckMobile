@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 
 
+
+
 from kivy.properties import StringProperty
 from kivy.uix.scatter import Scatter
 from kivymd.app import MDApp
@@ -29,9 +31,12 @@ from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.toolbar import MDTopAppBar
 
+
 class LoginScreen(Screen):
+
     def __init__(self, **kwargs):
         super(LoginScreen, self).__init__(**kwargs)
+
 
         box_layout = BoxLayout(orientation='vertical', padding=50, spacing=20)
         self.username_input = TextInput(hint_text='Username')
@@ -49,25 +54,36 @@ class LoginScreen(Screen):
 
     def go_to_next_screen(self, instance):
         self.autification()
-        self.second_screen = self.manager.get_screen('second_screen')
-        self.second_screen.name_student_lb = self.name_student
+
+
         MDApp.get_running_app().root.current = 'second_screen'
 
     def get_image_task(self):
         return self.dict_task_image
     def autification(self):
-        ses = requests.Session()
-        ses.post('https://api.100points.ru/login',
+        self.ses = requests.Session()
+        self.ses.post('https://api.100points.ru/login',
                  data={'email': 'sashalobov3@gmail.com',
                        'password': 'sashalobov3@gmail.com', '_xsrf': '_xsrf',
                        'remember': '1'})
 
-        ses.post("https://api.100points.ru/shift/start", data={"checked_25": "25"})  # запрос начать смену
-        student = ses.get("https://api.100points.ru/student_homework/view/3279236?from=from_homework")
+        self.ses.post("https://api.100points.ru/shift/start", data={"checked_25": "25"})  # запрос начать смену
+
+        site_dz = self.ses.get("https://api.100points.ru/student_homework/index")
+        soup_dz = BeautifulSoup(site_dz.text, "html.parser")
+        self.all_href_dz = soup_dz.find_all("a",class_="btn btn-xs bg-purple")
+        self.href_dz = []
+        for i in range(len(self.all_href_dz)):
+            self.href_dz.append(self.all_href_dz[i].get("href"))
+        self.current_ind_student = 0
+        self.load_student(self.href_dz[self.current_ind_student])
+
+    def load_student(self,href):
+        student = self.ses.get(str(href))
 
         soup_student = BeautifulSoup(student.text, "html.parser")
 
-
+        print(str(href))
 
         self.name_student = soup_student.find(attrs={"readonly": not (None)})
         self.name_student = self.name_student.get("value").strip()
@@ -142,7 +158,8 @@ class LoginScreen(Screen):
             count_w = count_w + 1
 
         self.image_dict_for_send = self.dict_task_image
-
+        self.second_screen = self.manager.get_screen('second_screen')
+        self.second_screen.name_student_lb = self.name_student
         # solition_task
         # student.set_data(id_student, checked_name, point_name, point,
         # comment_name, comment)
@@ -152,6 +169,13 @@ class LoginScreen(Screen):
 
 class SecondScreen(Screen):
     name_student_lb = 's'
+    def complete_job(self):
+        # отправляем запрос на принятие работы
+        self.login_screen.load_student(self.login_screen.href_dz[self.login_screen.current_ind_student + 1])
+        self.load_image(0)
+        self.lable_name.text = self.name_student_lb
+        self.login_screen.current_ind_student += 1
+        print(self.login_screen.href_dz[self.login_screen.current_ind_student])
     def load_image(self,i):
 
         self.buf_i = self.buf_i + i
@@ -159,6 +183,7 @@ class SecondScreen(Screen):
             self.buf_i = 0
         elif ( self.buf_i  == len(list(self.image_dict_for_load.keys()))):
             self.buf_i = len(list(self.image_dict_for_load.keys())) - 1
+        print(self.image_dict_for_load.keys())
         self.current_key = list(self.image_dict_for_load.keys())[self.buf_i]
         self.image.source  = self.image_dict_for_load[self.current_key ][0]
 
@@ -166,7 +191,10 @@ class SecondScreen(Screen):
         print(self.login_screen.name_student)
         return self.login_screen.name_student
     def __init__(self, **kwargs):
+
         super(SecondScreen, self).__init__(**kwargs)
+        self.mas_answer = {}
+
         self.image = AsyncImage(size_hint=(1, 1))
         self.s = ScatterLayout(size_hint=(1, 1))
         self.s.z = -1
@@ -217,7 +245,7 @@ class SecondScreen(Screen):
         self.buf_i = 0
         self.login_screen = self.manager.get_screen('login_screen')
         self.image_dict_for_load = self.login_screen.get_image_task()
-
+        print(self.image_dict_for_load)
 
         self.load_image(0)
 
@@ -247,7 +275,12 @@ class SecondScreen(Screen):
             self.image.source = self.image_dict_for_load[ self.current_key][self.current_index]
 
 
+class CustomBottomSheet(BoxLayout):
+    def save_answer(self):
+        self.second_screen = MDApp.get_running_app().root.get_screen('second_screen')
+        self.second_screen.mas_answer[str(self.second_screen.current_key)]=(self.ids['points'].text,self.ids['comment'].text)
 
+        print(self.second_screen.mas_answer)
 class ThirdScreen(Screen):
 
     def on_pre_enter(self, *args):

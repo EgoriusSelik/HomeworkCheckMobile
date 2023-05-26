@@ -45,14 +45,13 @@
         MDTopAppBar:
             title: app.root.get_screen('login_screen').name_student
         Spinner:
+            id: points
             text: 'Выберете балл'
-            values: ['1', '2', '3', '4']
+            values: ['0','1', '2', '3', '4']
 
         TextInput:
+            id: comment
             hint_text: 'Комментарий'
-
-
-
 
         BoxLayout:
             orientation: 'horizontal'
@@ -61,9 +60,11 @@
 
             Button:
                 text: 'Одобрить'
+                on_press: root.save_answer()
 
             Button:
                 text: 'Принять'
+                on_press: app.root.get_screen('second_screen').complete_job()
 
 
 
