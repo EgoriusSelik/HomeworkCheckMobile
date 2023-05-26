@@ -1,39 +1,70 @@
-#:kivy 2.1.0
+<MyScreenManager>:
+    LoginScreen:
+    SecondScreen:
+        name: 'second_screen'
 
-<Container>:
-    rows: 4
-    padding: 50
+        BoxLayout:
+            z: -1
+            orientation: 'horizontal'
+            spacing: 10
+            size_hint: (1, 0.2)
+            Button:
+                size_hint: (.5, 1)
+                z: -1
+                text: '<<'
+                on_press: app.root.get_screen('second_screen').load_image(-1)
+            Widget:
+                size_hint: (.5, 1)
+            Button:
+                size_hint: (.5, 1)
+                text: '>>'
+                on_press: app.root.get_screen('second_screen').load_image(1)
 
-    get_login_input: login_input
-    get_password_input: password_input
-    label_widget: label
+    ThirdScreen:
 
-    TextInput:
-        id: login_input
-        size_hint: 0.4, 0.3
-        multiline: False
-        font_size: 40
+<LoginScreen>:
+    name: 'login_screen'
 
-    TextInput:
-        id: password_input
-        size_hint: 0.4, 0.3
-        multiline: False
-        font_size: 40
-        password: True
-        password_mask: "*"
 
-    Label:
-        id: label
-        text: 'test'
-        font_size: 40
+<ThirdScreen>:
+    name: 'third_screen'
 
-    FloatLayout:
-        Button:
-            size_hint: 0.4, 0.3
-            pos_hint: {'center_x': 0.5, 'y': 0.1}
-            text: 'Войти'
-            font_size: 40
 
-            on_press:
-            # к верхнему виджету
-                root.get_text()
+
+<CustomBottomSheet@BoxLayout>:
+    z:100
+	size_hint_y: None
+	height: '500dp'
+	duration_opening: 0.8
+	animation: True
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 10
+
+        MDTopAppBar:
+            title: app.root.get_screen('login_screen').name_student
+        Spinner:
+            text: 'Выберете балл'
+            values: ['1', '2', '3', '4']
+
+        TextInput:
+            hint_text: 'Комментарий'
+
+
+
+
+        BoxLayout:
+            orientation: 'horizontal'
+            spacing: 10
+
+
+            Button:
+                text: 'Одобрить'
+
+            Button:
+                text: 'Принять'
+
+
+
+
