@@ -1,0 +1,9 @@
+README.md
+setup.py
+kivy_mobile.egg-info/PKG-INFO
+kivy_mobile.egg-info/SOURCES.txt
+kivy_mobile.egg-info/dependency_links.txt
+kivy_mobile.egg-info/requires.txt
+kivy_mobile.egg-info/top_level.txt
+kivy_mobile_app/__init__.py
+kivy_mobile_app/main.py
